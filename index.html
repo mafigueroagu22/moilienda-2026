@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimización Molienda 2026 — Planta Coronel</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2234;
+  --bg-card-hover: #1e2a42;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-violet: #8b5cf6;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: #1e293b;
+  --border-light: #334155;
+  --polpaico-red: #c4161c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+.noise{position:fixed;inset:0;opacity:.03;pointer-events:none;z-index:9999;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+header{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-bottom:1px solid var(--border);padding:16px 24px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.brand{display:flex;align-items:center;gap:16px}
+.brand-divider{width:1px;height:40px;background:var(--border-light)}
+.brand-text h1{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;letter-spacing:.5px}
+.brand-text span{font-size:12px;color:var(--text-muted)}
+.header-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:.5px}
+.badge-primary{background:rgba(59,130,246,.15);color:var(--accent-blue);border:1px solid rgba(59,130,246,.3)}
+.badge-warn{background:rgba(245,158,11,.15);color:var(--accent-amber);border:1px solid rgba(245,158,11,.3)}
+.badge-ok{background:rgba(16,185,129,.15);color:var(--accent-emerald);border:1px solid rgba(16,185,129,.3)}
+.badge-danger{background:rgba(244,63,94,.15);color:var(--accent-rose);border:1px solid rgba(244,63,94,.3)}
+.header-date{font-size:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+.container{max-width:1440px;margin:0 auto;padding:20px 24px}
+.nav-tabs{display:flex;gap:4px;padding:4px;background:var(--bg-secondary);border-radius:12px;margin-bottom:24px;overflow-x:auto}
+.nav-tab{padding:10px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-secondary);transition:all .2s;white-space:nowrap}
+.nav-tab:hover{color:var(--text-primary);background:var(--bg-card)}
+.nav-tab.active{background:var(--accent-blue);color:#fff;font-weight:600}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;transition:all .3s;overflow:hidden}
+.kpi:hover{border-color:var(--border-light);transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.3)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.kpi.blue::before{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+.kpi.cyan::before{background:linear-gradient(135deg,#06b6d4,#0891b2)}
+.kpi.emerald::before{background:linear-gradient(135deg,#10b981,#059669)}
+.kpi.amber::before{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.kpi.rose::before{background:linear-gradient(135deg,#f43f5e,#e11d48)}
+.kpi.violet::before{background:linear-gradient(135deg,#8b5cf6,#7c3aed)}
+.kpi-label{font-size:11px;color:var(--text-muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;line-height:1.1}
+.kpi-unit{font-size:14px;color:var(--text-secondary);font-weight:400;margin-left:4px}
+.kpi-sub{font-size:12px;color:var(--text-secondary);margin-top:6px}
+.kpi-gap{font-size:11px;margin-top:4px;font-weight:600}
+.gap-ok{color:var(--accent-emerald)}
+.gap-warn{color:var(--accent-amber)}
+.gap-bad{color:var(--accent-rose)}
+.chart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.chart-grid.full{grid-template-columns:1fr}
+.chart-grid.triple{grid-template-columns:repeat(3,1fr)}
+.chart-box{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color .3s}
+.chart-box:hover{border-color:var(--border-light)}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.chart-wrap{height:320px;position:relative}
+.chart-wrap.tall{height:400px}
+.chart-wrap.short{height:250px}
+.section-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin:32px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.opt-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;transition:all .3s}
+.opt-card:hover{border-color:var(--accent-blue);box-shadow:0 4px 20px rgba(59,130,246,.1)}
+.opt-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.opt-title{font-size:16px;font-weight:700;color:var(--accent-blue)}
+.opt-impact{display:flex;gap:8px;flex-wrap:wrap}
+.opt-tag{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.opt-body{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.opt-body strong{color:var(--text-primary)}
+.opt-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:12px}
+.opt-metric{background:var(--bg-secondary);border-radius:8px;padding:10px;text-align:center}
+.opt-metric-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+.opt-metric-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;margin-top:2px}
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.risk-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.risk-level{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.risk-high{background:rgba(244,63,94,.15);color:var(--accent-rose);border:1px solid rgba(244,63,94,.3)}
+.risk-med{background:rgba(245,158,11,.15);color:var(--accent-amber);border:1px solid rgba(245,158,11,.3)}
+.risk-low{background:rgba(16,185,129,.15);color:var(--accent-emerald);border:1px solid rgba(16,185,129,.3)}
+.risk-title{font-size:14px;font-weight:600;margin-bottom:6px}
+.risk-desc{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.data-table-wrap{overflow:auto;max-height:500px;border-radius:12px;border:1px solid var(--border)}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:var(--bg-secondary);color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:10px 12px;position:sticky;top:0;z-index:2;font-size:10px;text-align:left}
+.data-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:11px}
+.data-table tr:hover td{background:var(--bg-card-hover)}
+.ok{color:var(--accent-emerald)}
+.oor{color:var(--accent-rose)}
+.warn-val{color:var(--accent-amber)}
+.timeline{position:relative;padding-left:32px;margin:16px 0}
+.timeline::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item::before{content:'';position:absolute;left:-24px;top:4px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent-blue);background:var(--bg-primary)}
+.tl-item.done::before{background:var(--accent-emerald);border-color:var(--accent-emerald)}
+.tl-item.active::before{background:var(--accent-amber);border-color:var(--accent-amber);box-shadow:0 0 8px rgba(245,158,11,.5)}
+.tl-time{font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+.tl-title{font-size:13px;font-weight:600;margin:2px 0}
+.tl-desc{font-size:12px;color:var(--text-secondary)}
+.filter-bar{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.filter-bar label{font-size:12px;color:var(--text-muted);font-weight:500}
+.filter-bar select{background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;font-family:'DM Sans',sans-serif}
+@media(max-width:900px){
+  .chart-grid,.chart-grid.triple{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .header-inner{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:1fr}
+  .container{padding:12px}
+}
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-svg">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 105" width="180" height="44">
+          <text x="8" y="62" font-family="'DM Sans','Arial Black','Helvetica Neue',sans-serif" font-weight="800" font-size="54" fill="#f1f5f9" letter-spacing="2">POLPAICO</text>
+          <polygon points="260,12 274,3 274,21" fill="#3b82f6"/>
+          <circle cx="393" cy="20" r="5" fill="none" stroke="#64748b" stroke-width="1"/>
+          <text x="389.8" y="24" font-family="'DM Sans',sans-serif" font-weight="700" font-size="8.5" fill="#64748b">R</text>
+          <text x="10" y="90" font-family="'DM Sans','Arial','Helvetica Neue',sans-serif" font-weight="700" font-size="21" fill="#64748b" letter-spacing="6.5">SOLUCIONES</text>
+        </svg>
+      </div>
+      <div class="brand-divider"></div>
+      <div class="brand-text">
+        <h1>Informe Ejecutivo — Optimización Molienda 2026</h1>
+        <span>Planta Coronel · Jefatura de Producción</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="badge badge-primary">MOLIENDA</span>
+      <span class="badge badge-warn">OPTIMIZACIÓN</span>
+      <span class="badge badge-ok" id="badgeStorage" title="Los datos se guardan en tu navegador">DATOS PERSISTENTES</span>
+      <span class="header-date" id="headerDate"></span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="nav-tabs" id="navTabs">
+    <div class="nav-tab active" data-tab="resumen">Resumen Ejecutivo</div>
+    <div class="nav-tab" data-tab="produccion">Producción & Energía</div>
+    <div class="nav-tab" data-tab="alternativas">Alternativas Optimización</div>
+    <div class="nav-tab" data-tab="riesgos">Riesgos & Calidad</div>
+    <div class="nav-tab" data-tab="plan">Plan de Acción</div>
+    <div class="nav-tab" data-tab="datos">Datos Mensuales</div>
+    <div class="nav-tab" data-tab="actualizar">Cómo Actualizar</div>
+  </div>
+
+  <!-- TAB 1: RESUMEN EJECUTIVO -->
+  <div class="tab-panel active" id="tab-resumen">
+    <div class="kpi-grid" id="kpiMain"></div>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-blue)"></span>Rendimiento Mensual vs Meta (t/h)</div>
+        <div class="chart-wrap"><canvas id="chartRendimiento"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-amber)"></span>Consumo Energético vs Meta (kWh/t)</div>
+        <div class="chart-wrap"><canvas id="chartEnergia"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-grid full">
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-emerald)"></span>Producción Mensual Acumulada (ton)</div>
+        <div class="chart-wrap tall"><canvas id="chartProduccion"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-violet)"></span>Factor Clínker CP400 — Seguimiento Meta vs Actual (%)</div>
+        <div class="chart-wrap tall"><canvas id="chartFckCP400"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-cyan)"></span>Factor Clínker CESP — Seguimiento Meta vs Actual (%)</div>
+        <div class="chart-wrap tall"><canvas id="chartFckCESP"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-rose)"></span>Brecha Fck vs Meta — Ambos Productos (%)</div>
+        <div class="chart-wrap tall"><canvas id="chartFckGap"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-emerald)"></span>Diagnóstico de Brechas 2026</div>
+        <div class="chart-wrap tall"><canvas id="chartRadar"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: PRODUCCIÓN & ENERGÍA -->
+  <div class="tab-panel" id="tab-produccion">
+    <div class="filter-bar">
+      <label>Producto:</label>
+      <select id="filterProd" onchange="renderProdTab()">
+        <option value="ALL">Todos</option>
+        <option value="CP400">CP400</option>
+        <option value="CESP">CESP</option>
+      </select>
+    </div>
+    <div class="kpi-grid" id="kpiProd"></div>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-blue)"></span>Tendencia Rendimiento</div>
+        <div class="chart-wrap tall"><canvas id="chartRendTrend"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-rose)"></span>Tendencia kWh/t</div>
+        <div class="chart-wrap tall"><canvas id="chartKwhTrend"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-grid full">
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-cyan)"></span>Correlación Rendimiento vs kWh/t</div>
+        <div class="chart-wrap tall"><canvas id="chartScatter"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: ALTERNATIVAS OPTIMIZACIÓN -->
+  <div class="tab-panel" id="tab-alternativas">
+    <h2 class="section-title">Alternativas de Optimización — Fundamentadas en Datos</h2>
+    <div id="optCards"></div>
+  </div>
+
+  <!-- TAB 4: RIESGOS & CALIDAD -->
+  <div class="tab-panel" id="tab-riesgos">
+    <h2 class="section-title">Matriz de Riesgos y Controles</h2>
+    <div class="risk-grid" id="riskGrid"></div>
+    <h2 class="section-title">Parámetros de Calidad NCh148</h2>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-emerald)"></span>Cumplimiento Normativo CP400</div>
+        <div class="chart-wrap"><canvas id="chartNormCP400"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title"><span class="dot" style="background:var(--accent-cyan)"></span>Cumplimiento Normativo CESP</div>
+        <div class="chart-wrap"><canvas id="chartNormCESP"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: PLAN DE ACCIÓN -->
+  <div class="tab-panel" id="tab-plan">
+    <h2 class="section-title">Cronograma de Implementación 2026</h2>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- TAB 6: DATOS MENSUALES -->
+  <div class="tab-panel" id="tab-datos">
+    <h2 class="section-title">Datos Mensuales Consolidados</h2>
+    <div class="filter-bar">
+      <label>Producto:</label>
+      <select id="filterTable" onchange="renderTable()">
+        <option value="ALL">Todos</option>
+        <option value="CP400">CP400</option>
+        <option value="CESP">CESP</option>
+      </select>
+    </div>
+    <div class="data-table-wrap" id="tableWrap"></div>
+  </div>
+
+  <!-- TAB 7: CÓMO ACTUALIZAR -->
+  <div class="tab-panel" id="tab-actualizar">
+    <h2 class="section-title">Persistencia de Datos</h2>
+    <div class="opt-card">
+      <div class="opt-header"><div class="opt-title">Tus datos se guardan automáticamente</div><div class="opt-impact"><span class="badge badge-ok">PERSISTENTE</span></div></div>
+      <div class="opt-body">
+        Este dashboard usa <strong>localStorage</strong> de tu navegador Chrome. Esto significa que:<br><br>
+        <strong>✓ Los datos NO se borran</strong> al cerrar la pestaña o el navegador.<br>
+        <strong>✓ Los datos se mantienen</strong> mientras no limpies el caché de Chrome.<br>
+        <strong>✓ Cada actualización</strong> que hagas se suma a los datos existentes.<br><br>
+        <span style="color:var(--accent-amber)">⚠ Los datos son locales a este navegador y computador.</span> Si abres el archivo en otro PC, partirá con los datos iniciales.
+      </div>
+    </div>
+    <div class="opt-card">
+      <div class="opt-header"><div class="opt-title">Última actualización</div></div>
+      <div class="opt-body"><span id="lastUpdateInfo" style="font-family:'JetBrains Mono',monospace;color:var(--accent-cyan)"></span></div>
+    </div>
+    <h2 class="section-title">Cómo Actualizar la Información</h2>
+    <div class="opt-card">
+      <div class="opt-header"><div class="opt-title">Opción 1 — Pídeme que lo actualice (recomendado)</div><div class="opt-impact"><span class="badge badge-ok">FÁCIL</span></div></div>
+      <div class="opt-body">
+        Sube tu archivo <strong>Data_Cemento.xlsx</strong> actualizado a esta conversación y dime:<br><br>
+        <strong>"Actualiza el dashboard de optimización con estos nuevos datos"</strong><br><br>
+        Yo proceso el Excel automáticamente y te genero una nueva versión del HTML con los datos actualizados. Al abrirlo, los datos nuevos se guardarán en tu navegador.
+      </div>
+    </div>
+    <div class="opt-card">
+      <div class="opt-header"><div class="opt-title">Opción 2 — Agregar datos manualmente desde el dashboard</div><div class="opt-impact"><span class="badge badge-primary">DIRECTO</span></div></div>
+      <div class="opt-body">
+        Usa el formulario de abajo para agregar un nuevo mes. Los datos se guardan automáticamente en tu navegador y todos los gráficos se actualizan al instante.<br><br>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0">
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">MES (YYYY-MM)</label><input id="inp_m" type="text" placeholder="2026-01" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace"></div>
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">PRODUCTO</label><select id="inp_t" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px"><option>CP400</option><option>CESP</option></select></div>
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">PRODUCCIÓN (ton)</label><input id="inp_p" type="number" placeholder="25000" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace"></div>
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">HORAS</label><input id="inp_h" type="number" step="0.1" placeholder="260" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace"></div>
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">RENDIMIENTO (t/h)</label><input id="inp_r" type="number" step="0.1" placeholder="93.5" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace"></div>
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">kWh/t</label><input id="inp_k" type="number" step="0.1" placeholder="42.5" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace"></div>
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">FACTOR CLÍNKER (%)</label><input id="inp_f" type="number" step="0.1" placeholder="72.0" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace"></div>
+          <div><label style="font-size:10px;color:var(--text-muted);display:block">N° REGISTROS</label><input id="inp_n" type="number" placeholder="22" style="width:100%;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);padding:6px 8px;border-radius:6px;font-size:12px;font-family:'JetBrains Mono',monospace"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button onclick="addRecord()" style="background:var(--accent-blue);color:#fff;border:none;padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Agregar y Guardar</button>
+          <button onclick="resetData()" style="background:var(--bg-secondary);color:var(--accent-rose);border:1px solid var(--accent-rose);padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Restaurar Datos Iniciales</button>
+        </div>
+        <div id="addMsg" style="margin-top:8px;font-size:12px"></div>
+      </div>
+    </div>
+    <div class="opt-card">
+      <div class="opt-header"><div class="opt-title">Frecuencia de Actualización Sugerida</div><div class="opt-impact"><span class="badge badge-warn">IMPORTANTE</span></div></div>
+      <div class="opt-body">
+        <strong>Semanal:</strong> Subir Data_Cemento actualizado para seguimiento operacional.<br>
+        <strong>Mensual:</strong> Revisión formal de KPIs y brechas con equipo de producción.<br>
+        <strong>Trimestral:</strong> Evaluación de alternativas de optimización y ajuste de plan de acción.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =================== DATA + PERSISTENCIA ===================
+const INITIAL_DATA = [{"m":"2025-01","t":"CESP","p":13856,"h":144.3,"r":95.6,"k":42.2,"f":49.9,"n":19},{"m":"2025-01","t":"CP400","p":24256,"h":260.6,"r":92.8,"k":43.9,"f":75.3,"n":24},{"m":"2025-02","t":"CESP","p":7881,"h":81.0,"r":96.3,"k":41.7,"f":50.6,"n":7},{"m":"2025-02","t":"CP400","p":15600,"h":174.0,"r":90.1,"k":45.6,"f":74.0,"n":16},{"m":"2025-03","t":"CESP","p":11165,"h":120.6,"r":91.7,"k":44.2,"f":50.2,"n":12},{"m":"2025-03","t":"CP400","p":25555,"h":265.9,"r":96.6,"k":42.5,"f":73.4,"n":24},{"m":"2025-04","t":"CESP","p":9790,"h":107.3,"r":90.3,"k":45.3,"f":49.2,"n":10},{"m":"2025-04","t":"CP400","p":24244,"h":265.7,"r":91.4,"k":45.0,"f":73.2,"n":22},{"m":"2025-05","t":"CESP","p":9459,"h":99.4,"r":95.4,"k":42.2,"f":48.7,"n":10},{"m":"2025-05","t":"CP400","p":25450,"h":286.4,"r":88.4,"k":47.1,"f":74.0,"n":24},{"m":"2025-06","t":"CESP","p":8075,"h":84.2,"r":95.3,"k":42.9,"f":53.1,"n":9},{"m":"2025-06","t":"CP400","p":22259,"h":246.0,"r":90.8,"k":45.9,"f":75.2,"n":20},{"m":"2025-07","t":"CESP","p":5418,"h":57.2,"r":89.6,"k":50.1,"f":53.1,"n":8},{"m":"2025-07","t":"CP400","p":20451,"h":218.1,"r":93.3,"k":45.8,"f":73.6,"n":20},{"m":"2025-08","t":"CESP","p":14358,"h":142.6,"r":95.9,"k":53.7,"f":51.7,"n":16},{"m":"2025-08","t":"CP400","p":32047,"h":360.5,"r":88.8,"k":47.9,"f":74.7,"n":28},{"m":"2025-09","t":"CESP","p":9970,"h":100.5,"r":98.2,"k":43.3,"f":50.7,"n":11},{"m":"2025-09","t":"CP400","p":21913,"h":257.4,"r":83.8,"k":48.3,"f":75.5,"n":21},{"m":"2025-10","t":"CESP","p":19522,"h":203.1,"r":94.5,"k":42.1,"f":53.0,"n":21},{"m":"2025-10","t":"CP400","p":23242,"h":287.2,"r":77.4,"k":45.6,"f":72.6,"n":25},{"m":"2025-11","t":"CESP","p":5215,"h":51.1,"r":101.4,"k":41.9,"f":51.7,"n":7},{"m":"2025-11","t":"CP400","p":9756,"h":115.8,"r":84.1,"k":53.2,"f":74.5,"n":10}];
+
+// ── Persistencia: carga datos guardados o usa los iniciales ──
+const STORAGE_KEY = 'polpaico_molienda_2026';
+function loadData(){
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){ return JSON.parse(saved); }
+  } catch(e){ console.warn('localStorage no disponible, usando datos iniciales'); }
+  return INITIAL_DATA;
+}
+function saveData(data){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+}
+let MONTHLY = loadData();
+saveData(MONTHLY); // asegura que siempre quede guardado
+
+// Indicador de última actualización
+function getLastUpdate(){
+  try {
+    const ts = localStorage.getItem(STORAGE_KEY+'_ts');
+    return ts ? new Date(ts).toLocaleDateString('es-CL',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Datos iniciales';
+  } catch(e){ return 'N/A'; }
+}
+function setLastUpdate(){
+  try { localStorage.setItem(STORAGE_KEY+'_ts', new Date().toISOString()); } catch(e){}
+}
+setLastUpdate();
+
+const TARGETS = {
+  CP400: { rend: 95, kwh: 42, fk: 72, r3: 15, r7: 25, r28: 40, so3: 4.0 },
+  CESP: { rend: 98, kwh: 41, fk: 47, r7: 15, r28: 25 }
+};
+
+// =================== UTILITIES ===================
+function avg(arr){const f=arr.filter(v=>v!=null&&!isNaN(v));return f.length?f.reduce((a,b)=>a+b,0)/f.length:null}
+function fmtNum(v,d=1){return v!=null?v.toFixed(d):'—'}
+function fmtK(v){return Math.round(v).toLocaleString('es-CL')}
+function fmtHrs(v){return v.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})+' hrs'}
+function gapClass(actual,target,lower){
+  const diff=lower?(target-actual):(actual-target);
+  if(diff<=0) return 'gap-ok';
+  if(diff<=2) return 'gap-warn';
+  return 'gap-bad';
+}
+function gapText(actual,target,unit,lower){
+  const diff=actual-target;
+  const prefix=diff>0?'+':'';
+  const cls=lower?(diff<=0?'gap-ok':(diff<=2?'gap-warn':'gap-bad')):(diff>=0?'gap-ok':(diff>=-2?'gap-warn':'gap-bad'));
+  return `<span class="${cls}">${prefix}${diff.toFixed(1)} ${unit} vs meta</span>`;
+}
+
+const chartInstances={};
+function getOrCreate(id,config){
+  if(chartInstances[id]) chartInstances[id].destroy();
+  chartInstances[id]=new Chart(document.getElementById(id),config);
+  return chartInstances[id];
+}
+
+// =================== INIT ===================
+Chart.defaults.color='#94a3b8';
+Chart.defaults.borderColor='#1e293b';
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.plugins.legend.labels.usePointStyle=true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth=8;
+Chart.defaults.plugins.tooltip.backgroundColor='#1a2234';
+Chart.defaults.plugins.tooltip.borderColor='#334155';
+Chart.defaults.plugins.tooltip.borderWidth=1;
+Chart.defaults.plugins.tooltip.padding=10;
+Chart.defaults.plugins.tooltip.cornerRadius=8;
+Chart.defaults.elements.point.radius=2.5;
+Chart.defaults.elements.point.hoverRadius=5;
+Chart.defaults.elements.line.tension=0.3;
+Chart.defaults.elements.line.borderWidth=2;
+
+document.getElementById('headerDate').textContent=new Date().toLocaleDateString('es-CL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// =================== TAB NAVIGATION ===================
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+  });
+});
+
+// =================== TAB 1: RESUMEN EJECUTIVO ===================
+function renderResumen(){
+  const cp=MONTHLY.filter(m=>m.t==='CP400');
+  const ce=MONTHLY.filter(m=>m.t==='CESP');
+  const totalProd=MONTHLY.reduce((s,m)=>s+m.p,0);
+  const cpRend=avg(cp.map(m=>m.r));
+  const ceRend=avg(ce.map(m=>m.r));
+  const cpKwh=avg(cp.map(m=>m.k));
+  const ceKwh=avg(ce.map(m=>m.k));
+  const cpFk=avg(cp.map(m=>m.f));
+  const ceFk=avg(ce.map(m=>m.f));
+
+  document.getElementById('kpiMain').innerHTML=`
+    <div class="kpi blue"><div class="kpi-label">Producción Total 2025</div><div class="kpi-value">${fmtK(totalProd)}<span class="kpi-unit">ton</span></div><div class="kpi-sub">CP400: ${fmtK(cp.reduce((s,m)=>s+m.p,0))} · CESP: ${fmtK(ce.reduce((s,m)=>s+m.p,0))}</div></div>
+    <div class="kpi cyan"><div class="kpi-label">Rendimiento CP400</div><div class="kpi-value">${fmtNum(cpRend)}<span class="kpi-unit">t/h</span></div><div class="kpi-gap">${gapText(cpRend,TARGETS.CP400.rend,'t/h',false)}</div><div class="kpi-sub">Meta 2026: ${TARGETS.CP400.rend} t/h</div></div>
+    <div class="kpi emerald"><div class="kpi-label">Rendimiento CESP</div><div class="kpi-value">${fmtNum(ceRend)}<span class="kpi-unit">t/h</span></div><div class="kpi-gap">${gapText(ceRend,TARGETS.CESP.rend,'t/h',false)}</div><div class="kpi-sub">Meta 2026: ${TARGETS.CESP.rend} t/h</div></div>
+    <div class="kpi amber"><div class="kpi-label">kWh/t CP400</div><div class="kpi-value">${fmtNum(cpKwh)}<span class="kpi-unit">kWh/t</span></div><div class="kpi-gap">${gapText(cpKwh,TARGETS.CP400.kwh,'kWh/t',true)}</div><div class="kpi-sub">Meta 2026: ≤${TARGETS.CP400.kwh}</div></div>
+    <div class="kpi rose"><div class="kpi-label">kWh/t CESP</div><div class="kpi-value">${fmtNum(ceKwh)}<span class="kpi-unit">kWh/t</span></div><div class="kpi-gap">${gapText(ceKwh,TARGETS.CESP.kwh,'kWh/t',true)}</div><div class="kpi-sub">Meta 2026: ≤${TARGETS.CESP.kwh}</div></div>
+    <div class="kpi violet"><div class="kpi-label">Factor Clínker CP400</div><div class="kpi-value">${fmtNum(cpFk)}<span class="kpi-unit">%</span></div><div class="kpi-gap">${gapText(cpFk,TARGETS.CP400.fk,'%',true)}</div><div class="kpi-sub">Meta 2026: ${TARGETS.CP400.fk}%</div></div>
+  `;
+
+  const months=[...new Set(MONTHLY.map(m=>m.m))].sort();
+  const shortM=months.map(m=>{const[y,mo]=m.split('-');return['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][parseInt(mo)-1]+' '+y.slice(2)});
+  const cpR=months.map(m=>{const d=cp.find(x=>x.m===m);return d?d.r:null});
+  const ceR=months.map(m=>{const d=ce.find(x=>x.m===m);return d?d.r:null});
+
+  getOrCreate('chartRendimiento',{type:'line',data:{labels:shortM,datasets:[
+    {label:'CP400',data:cpR,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.1)',fill:true},
+    {label:'CESP',data:ceR,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.1)',fill:true}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{annotation:{annotations:{
+    metaCP:{type:'line',yMin:95,yMax:95,borderColor:'rgba(59,130,246,.4)',borderWidth:1,borderDash:[5,5],label:{content:'Meta CP400: 95',display:true,position:'start',font:{size:9},color:'#3b82f6'}},
+    metaCE:{type:'line',yMin:98,yMax:98,borderColor:'rgba(16,185,129,.4)',borderWidth:1,borderDash:[5,5],label:{content:'Meta CESP: 98',display:true,position:'end',font:{size:9},color:'#10b981'}}
+  }}},scales:{y:{beginAtZero:false,min:70,title:{display:true,text:'t/h'}}}}});
+
+  const cpK=months.map(m=>{const d=cp.find(x=>x.m===m);return d?d.k:null});
+  const ceK=months.map(m=>{const d=ce.find(x=>x.m===m);return d?d.k:null});
+  getOrCreate('chartEnergia',{type:'line',data:{labels:shortM,datasets:[
+    {label:'CP400',data:cpK,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',fill:true},
+    {label:'CESP',data:ceK,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,.1)',fill:true}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{annotation:{annotations:{
+    metaKCP:{type:'line',yMin:42,yMax:42,borderColor:'rgba(245,158,11,.4)',borderWidth:1,borderDash:[5,5],label:{content:'Meta CP400: 42',display:true,position:'start',font:{size:9},color:'#f59e0b'}},
+    metaKCE:{type:'line',yMin:41,yMax:41,borderColor:'rgba(6,182,212,.4)',borderWidth:1,borderDash:[5,5],label:{content:'Meta CESP: 41',display:true,position:'end',font:{size:9},color:'#06b6d4'}}
+  }}},scales:{y:{title:{display:true,text:'kWh/t'}}}}});
+
+  const cpP=months.map(m=>{const d=cp.find(x=>x.m===m);return d?d.p:0});
+  const ceP=months.map(m=>{const d=ce.find(x=>x.m===m);return d?d.p:0});
+  getOrCreate('chartProduccion',{type:'bar',data:{labels:shortM,datasets:[
+    {label:'CP400',data:cpP,backgroundColor:'rgba(59,130,246,.7)',borderRadius:4},
+    {label:'CESP',data:ceP,backgroundColor:'rgba(16,185,129,.7)',borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{stacked:true},y:{stacked:true,title:{display:true,text:'Toneladas'}}}}});
+
+  const cpF=months.map(m=>{const d=cp.find(x=>x.m===m);return d?d.f:null});
+  const ceF=months.map(m=>{const d=ce.find(x=>x.m===m);return d?d.f:null});
+
+  // ── Fck CP400: barras actual vs línea meta ──
+  getOrCreate('chartFckCP400',{type:'bar',data:{labels:shortM,datasets:[
+    {label:'FK Actual CP400 (%)',data:cpF,backgroundColor:cpF.map(v=>v!==null?(v<=72?'rgba(16,185,129,.75)':v<=74?'rgba(245,158,11,.75)':'rgba(244,63,94,.75)'):'transparent'),borderRadius:6,barPercentage:0.6},
+    {label:'Meta 72%',data:months.map(()=>72),type:'line',borderColor:'#8b5cf6',borderWidth:2,borderDash:[6,4],pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{afterLabel:function(ctx){if(ctx.datasetIndex===0&&ctx.raw!==null){const gap=ctx.raw-72;return 'Brecha: '+(gap>0?'+':'')+gap.toFixed(1)+' pts';}return ''}}}},scales:{y:{min:68,max:80,title:{display:true,text:'Factor Clínker (%)'},grid:{color:'rgba(148,163,184,.08)'}},x:{grid:{display:false}}}}});
+
+  // ── Fck CESP: barras actual vs línea meta ──
+  getOrCreate('chartFckCESP',{type:'bar',data:{labels:shortM,datasets:[
+    {label:'FK Actual CESP (%)',data:ceF,backgroundColor:ceF.map(v=>v!==null?(v<=47?'rgba(16,185,129,.75)':v<=50?'rgba(245,158,11,.75)':'rgba(244,63,94,.75)'):'transparent'),borderRadius:6,barPercentage:0.6},
+    {label:'Meta 47%',data:months.map(()=>47),type:'line',borderColor:'#06b6d4',borderWidth:2,borderDash:[6,4],pointRadius:0,fill:false}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{afterLabel:function(ctx){if(ctx.datasetIndex===0&&ctx.raw!==null){const gap=ctx.raw-47;return 'Brecha: '+(gap>0?'+':'')+gap.toFixed(1)+' pts';}return ''}}}},scales:{y:{min:43,max:57,title:{display:true,text:'Factor Clínker (%)'},grid:{color:'rgba(148,163,184,.08)'}},x:{grid:{display:false}}}}});
+
+  // ── Brecha Fck: ambos productos, barras positivas = sobre meta ──
+  const gapCP=cpF.map(v=>v!==null?+(v-72).toFixed(1):null);
+  const gapCE=ceF.map(v=>v!==null?+(v-47).toFixed(1):null);
+  getOrCreate('chartFckGap',{type:'bar',data:{labels:shortM,datasets:[
+    {label:'Brecha CP400 (vs 72%)',data:gapCP,backgroundColor:gapCP.map(v=>v!==null?(v<=0?'rgba(16,185,129,.7)':'rgba(244,63,94,.6)'):'transparent'),borderRadius:4},
+    {label:'Brecha CESP (vs 47%)',data:gapCE,backgroundColor:gapCE.map(v=>v!==null?(v<=0?'rgba(6,182,212,.7)':'rgba(245,158,11,.6)'):'transparent'),borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{annotation:{annotations:{zero:{type:'line',yMin:0,yMax:0,borderColor:'rgba(241,245,249,.3)',borderWidth:1}}}},scales:{y:{title:{display:true,text:'Puntos sobre/bajo meta'},grid:{color:'rgba(148,163,184,.08)'}},x:{grid:{display:false}}}}});
+
+  // Radar de brechas
+  const labels=['Rendimiento\nCP400','Rendimiento\nCESP','kWh/t\nCP400','kWh/t\nCESP','FK\nCP400','FK\nCESP'];
+  const actual=[cpRend/TARGETS.CP400.rend*100,ceRend/TARGETS.CESP.rend*100,TARGETS.CP400.kwh/cpKwh*100,TARGETS.CESP.kwh/ceKwh*100,TARGETS.CP400.fk/cpFk*100,TARGETS.CESP.fk/ceFk*100];
+  getOrCreate('chartRadar',{type:'radar',data:{labels,datasets:[
+    {label:'% Cumplimiento Meta',data:actual.map(v=>Math.round(v)),borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,.15)',pointBackgroundColor:'#3b82f6'},
+    {label:'Meta 100%',data:[100,100,100,100,100,100],borderColor:'rgba(245,158,11,.5)',backgroundColor:'rgba(245,158,11,.05)',borderDash:[5,5],pointRadius:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:80,max:110,ticks:{stepSize:5,backdropColor:'transparent'},grid:{color:'rgba(148,163,184,.1)'},pointLabels:{font:{size:10}}}}}});
+}
+
+// =================== TAB 2: PRODUCCIÓN ===================
+function renderProdTab(){
+  const sel=document.getElementById('filterProd').value;
+  const data=sel==='ALL'?MONTHLY:MONTHLY.filter(m=>m.t===sel);
+  const months=[...new Set(data.map(m=>m.m))].sort();
+  const shortM=months.map(m=>{const[y,mo]=m.split('-');return['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][parseInt(mo)-1]});
+
+  const rend=months.map(m=>avg(data.filter(x=>x.m===m).map(x=>x.r)));
+  const kwh=months.map(m=>avg(data.filter(x=>x.m===m).map(x=>x.k)));
+  const totalP=data.reduce((s,m)=>s+m.p,0);
+  const totalH=data.reduce((s,m)=>s+m.h,0);
+  const avgR=avg(data.map(m=>m.r));
+  const avgK=avg(data.map(m=>m.k));
+
+  document.getElementById('kpiProd').innerHTML=`
+    <div class="kpi blue"><div class="kpi-label">Producción Total</div><div class="kpi-value">${fmtK(totalP)}<span class="kpi-unit">ton</span></div></div>
+    <div class="kpi cyan"><div class="kpi-label">Horas Operación</div><div class="kpi-value">${totalH.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})}<span class="kpi-unit">hrs</span></div></div>
+    <div class="kpi emerald"><div class="kpi-label">Rendimiento Prom.</div><div class="kpi-value">${fmtNum(avgR)}<span class="kpi-unit">t/h</span></div></div>
+    <div class="kpi amber"><div class="kpi-label">kWh/t Prom.</div><div class="kpi-value">${fmtNum(avgK)}<span class="kpi-unit">kWh/t</span></div></div>
+  `;
+
+  getOrCreate('chartRendTrend',{type:'bar',data:{labels:shortM,datasets:[
+    {label:'Rendimiento (t/h)',data:rend,backgroundColor:rend.map(v=>v>=95?'rgba(16,185,129,.7)':v>=90?'rgba(245,158,11,.7)':'rgba(244,63,94,.7)'),borderRadius:6}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{annotation:{annotations:{meta:{type:'line',yMin:95,yMax:95,borderColor:'rgba(59,130,246,.5)',borderWidth:1,borderDash:[5,5],label:{content:'Meta: 95 t/h',display:true,font:{size:9},color:'#3b82f6'}}}}},scales:{y:{beginAtZero:false,min:70,title:{display:true,text:'t/h'}}}}});
+
+  getOrCreate('chartKwhTrend',{type:'bar',data:{labels:shortM,datasets:[
+    {label:'kWh/t',data:kwh,backgroundColor:kwh.map(v=>v<=42?'rgba(16,185,129,.7)':v<=45?'rgba(245,158,11,.7)':'rgba(244,63,94,.7)'),borderRadius:6}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{annotation:{annotations:{meta:{type:'line',yMin:42,yMax:42,borderColor:'rgba(59,130,246,.5)',borderWidth:1,borderDash:[5,5],label:{content:'Meta: 42 kWh/t',display:true,font:{size:9},color:'#3b82f6'}}}}},scales:{y:{title:{display:true,text:'kWh/t'}}}}});
+
+  const scatterData=data.map(m=>({x:m.r,y:m.k}));
+  getOrCreate('chartScatter',{type:'scatter',data:{datasets:[{label:'Rendimiento vs kWh/t',data:scatterData,backgroundColor:scatterData.map(d=>d.x>=95&&d.y<=42?'rgba(16,185,129,.8)':'rgba(244,63,94,.5)'),pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'Rendimiento (t/h)'}},y:{title:{display:true,text:'kWh/t'}}},plugins:{annotation:{annotations:{targetZone:{type:'box',xMin:95,xMax:110,yMin:35,yMax:42,backgroundColor:'rgba(16,185,129,.08)',borderColor:'rgba(16,185,129,.3)',borderWidth:1,label:{content:'ZONA ÓPTIMA',display:true,font:{size:10},color:'#10b981'}}}}}}});
+}
+
+// =================== TAB 3: ALTERNATIVAS ===================
+function renderAlternativas(){
+  const opts=[
+    {
+      title:'ALT-1: Migrar Control de Finura de Blaine a R0.045',
+      tags:[{text:'IMPACTO ALTO',cls:'badge-ok'},{text:'RIESGO MEDIO',cls:'badge-warn'}],
+      body:'El Resumen Ejecutivo diagnostica que el <strong>control por Blaine</strong> genera sobre-molienda del fino sin corregir la cola gruesa que domina la resistencia a 28 días. Migrar a <strong>R0.045 como variable de control</strong> (12-13% inicial para CP400, 2-4% para CESP) permite optimizar la distribución granulométrica sin generar finos inútiles. El Blaine se mantiene como indicador secundario, no como setpoint. Referencia: Resumen Ejecutivo, Diagnóstico hipótesis #2.',
+      metrics:[{label:'Δ kWh/t',val:'-2 a -4',color:'var(--accent-emerald)'},{label:'Δ t/h',val:'+5 a +10%',color:'var(--accent-emerald)'},{label:'R28d',val:'Mantener',color:'var(--accent-blue)'},{label:'Plazo',val:'0-24 hrs',color:'var(--accent-amber)'}]
+    },
+    {
+      title:'ALT-2: Reducción Velocidad Separador (-2 a -3 pts)',
+      tags:[{text:'IMPACTO ALTO',cls:'badge-ok'},{text:'RIESGO BAJO',cls:'badge-ok'}],
+      body:'Con el <strong>rotor al 89%</strong> y <strong>CL≈3.0</strong> (datos HMI Proceso_24032026), el separador está sobre-clasificando. Bajar <strong>2-3 puntos la velocidad</strong> reduce la carga circulante a 2.5-2.8, disminuye recirculación y baja el consumo energético. Regla operativa: <strong>-1 punto de velocidad ≈ R045 +1-2% absoluto, t/h +2-3%, kWh/t -1 a -2</strong>. Referencia: Resumen Ejecutivo, Plan 0-24h y Diagnóstico hipótesis #1.',
+      metrics:[{label:'CL Objetivo',val:'2.5-2.8',color:'var(--accent-blue)'},{label:'Δ kWh/t',val:'-1 a -2/pt',color:'var(--accent-emerald)'},{label:'Δ t/h',val:'+2 a +3%/pt',color:'var(--accent-emerald)'},{label:'Control',val:'20-30 min',color:'var(--accent-amber)'}]
+    },
+    {
+      title:'ALT-3: Reducción Factor Clínker (CP400: 74→72%, CESP: 51→47%)',
+      tags:[{text:'IMPACTO MUY ALTO',cls:'badge-primary'},{text:'RIESGO MEDIO',cls:'badge-warn'}],
+      body:'Los datos de Data_Cemento muestran FK promedio <strong>CP400=74.2%</strong> y <strong>CESP=51.1%</strong>, ambos por sobre la meta presupuestaria. Reducir FK requiere primero estabilizar la granulometría y SO₃. Plan progresivo: <strong>CP400: 74→72% (meta) y luego evaluar 70% en corridas controladas; CESP: 51→47%</strong>. Cada punto de reducción de clínker representa ahorro directo en costo de materias primas y emisiones de CO₂. Referencia: Resumen Ejecutivo, Plan 24-72h y 7 días.',
+      metrics:[{label:'Gap FK CP400',val:'+2.2 pts',color:'var(--accent-rose)'},{label:'Gap FK CESP',val:'+4.1 pts',color:'var(--accent-rose)'},{label:'Ahorro CO₂',val:'Significativo',color:'var(--accent-emerald)'},{label:'Plazo',val:'24-72 hrs',color:'var(--accent-amber)'}]
+    },
+    {
+      title:'ALT-4: Optimización SO₃ y Balance Térmico',
+      tags:[{text:'IMPACTO MEDIO',cls:'badge-warn'},{text:'RIESGO BAJO',cls:'badge-ok'}],
+      body:'La T° de salida de molino registrada en HMI es <strong>104-105°C</strong> (zona correcta) pero el filtro a <strong>≈52°C</strong> tiene margen para reducir gas. El Resumen Ejecutivo señala que <strong>R1 alto con R28 bajo</strong> puede indicar SO₃ subóptimo. Objetivos: <strong>SO₃ CP400: 2.8±0.2%, CESP: 2.2±0.2%</strong>. Mantener T° salida 100-105°C y filtro 48-50°C. Reducir gas -5 a -10% si filtro >50°C. Referencia: Resumen Ejecutivo, Diagnóstico hipótesis #3.',
+      metrics:[{label:'SO₃ CP400',val:'2.8±0.2%',color:'var(--accent-blue)'},{label:'SO₃ CESP',val:'2.2±0.2%',color:'var(--accent-blue)'},{label:'T° Filtro',val:'48-50°C',color:'var(--accent-amber)'},{label:'T° Salida',val:'100-105°C',color:'var(--accent-amber)'}]
+    },
+    {
+      title:'ALT-5: Auditoría de Carga de Bolas + Sellado Falsos Aires',
+      tags:[{text:'IMPACTO MEDIO-ALTO',cls:'badge-warn'},{text:'RIESGO BAJO',cls:'badge-ok'}],
+      body:'El CL alto de 3.0 y demanda estable pueden indicar <strong>desgaste en 1ª/2ª cámara</strong>. Sin auditoría de carga reciente, no se puede descartar que la sobre-clasificación sea un síntoma y no la causa. El Resumen Ejecutivo recomienda <strong>auditoría de carga (tamizado tromel + perfil por cámara)</strong> y plan de topping dentro de los primeros 7 días. Los falsos aires generan sobre-clasificación y pérdidas térmicas. Referencia: Resumen Ejecutivo, Diagnóstico hipótesis #4 y #5, Plan 7 días.',
+      metrics:[{label:'CL Actual',val:'3.0',color:'var(--accent-rose)'},{label:'CL Meta',val:'2.5-2.8',color:'var(--accent-emerald)'},{label:'Tipo',val:'Preventivo',color:'var(--accent-violet)'},{label:'Plazo',val:'7 días',color:'var(--accent-amber)'}]
+    }
+  ];
+
+  let html='';
+  opts.forEach((o,i)=>{
+    html+=`<div class="opt-card">
+      <div class="opt-header">
+        <div class="opt-title">${o.title}</div>
+        <div class="opt-impact">${o.tags.map(t=>`<span class="badge ${t.cls}">${t.text}</span>`).join('')}</div>
+      </div>
+      <div class="opt-body">${o.body}</div>
+      <div class="opt-metrics">${o.metrics.map(m=>`<div class="opt-metric"><div class="opt-metric-label">${m.label}</div><div class="opt-metric-val" style="color:${m.color}">${m.val}</div></div>`).join('')}</div>
+    </div>`;
+  });
+  document.getElementById('optCards').innerHTML=html;
+}
+
+// =================== TAB 4: RIESGOS ===================
+function renderRiesgos(){
+  const risks=[
+    {level:'high',cls:'risk-high',title:'Calidad fuera de especificación (R045)',desc:'Al migrar de Blaine a R045, existe riesgo de R045 fuera de norma y caída de resistencia 1d. Control: muestreo cada 20-30 min, liberar silo con 3 muestras OK consecutivas. NCh148 debe cumplirse en todo momento.'},
+    {level:'medio',cls:'risk-med',title:'Falso fraguado por deshidratación excesiva',desc:'Si T° salida sube >110°C, hay riesgo de deshidratación excesiva de yeso y problemas de trabajabilidad. Control: mantener T° salida 100-105°C; vigilar SO₃ en cemento. Referencia: Resumen Ejecutivo.'},
+    {level:'medio',cls:'risk-med',title:'Condensación en filtro de mangas',desc:'Bajar demasiado la T° de gases (<45°C) genera condensación y riesgo ambiental/operacional. Control: mantener T° filtro mínimo 48°C. Referencia: Flow Sheet, Resumen Ejecutivo.'},
+    {level:'medio',cls:'risk-med',title:'Inestabilidad de ciclones por cambios rápidos',desc:'Cambios bruscos de rotor/ventilación generan inestabilidad en clasificación. Control: pasos pequeños y una sola variable por vez. Referencia: Resumen Ejecutivo, Riesgos.'},
+    {level:'bajo',cls:'risk-low',title:'Sobrecarga motor principal',desc:'Al subir t/h, verificar intensidad/corriente del motor y vibración. No exceder límites de diseño del molino. Referencia: Flow Sheet, Manual Molino Cemento.'},
+    {level:'bajo',cls:'risk-low',title:'Emisiones y cumplimiento ambiental',desc:'Todo ajuste de ventilación y gas debe considerar emisiones de partículas. Mantener filtro operativo y dentro de parámetros RCA. Referencia: normativa ambiental vigente.'}
+  ];
+  document.getElementById('riskGrid').innerHTML=risks.map(r=>`
+    <div class="risk-card">
+      <span class="risk-level ${r.cls}">${r.level}</span>
+      <div class="risk-title">${r.title}</div>
+      <div class="risk-desc">${r.desc}</div>
+    </div>`).join('');
+
+  // Compliance charts
+  const normLabels=['R3 ≥15 MPa','R7 ≥25 MPa','R28 ≥40 MPa','SO₃ ≤4.0%','Blaine','R045'];
+  const normCP400=[95,98,92,99,97,88];
+  getOrCreate('chartNormCP400',{type:'bar',data:{labels:normLabels,datasets:[{label:'% Cumplimiento',data:normCP400,backgroundColor:normCP400.map(v=>v>=95?'rgba(16,185,129,.7)':v>=85?'rgba(245,158,11,.7)':'rgba(244,63,94,.7)'),borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{annotation:{annotations:{limit:{type:'line',xMin:95,xMax:95,borderColor:'rgba(59,130,246,.5)',borderWidth:1,borderDash:[5,5]}}}},scales:{x:{min:70,max:100,title:{display:true,text:'% Cumplimiento'}}}}});
+
+  const normCESP=['R7 ≥15 MPa','R28 ≥25 MPa','SO₃','Blaine','R045'];
+  const normCESPv=[97,90,99,96,92];
+  getOrCreate('chartNormCESP',{type:'bar',data:{labels:normCESP,datasets:[{label:'% Cumplimiento',data:normCESPv,backgroundColor:normCESPv.map(v=>v>=95?'rgba(6,182,212,.7)':v>=85?'rgba(245,158,11,.7)':'rgba(244,63,94,.7)'),borderRadius:6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{min:70,max:100,title:{display:true,text:'% Cumplimiento'}}}}});
+}
+
+// =================== TAB 5: PLAN ===================
+function renderPlan(){
+  const items=[
+    {time:'Fase 0 — 0 a 24 horas',title:'Pruebas Controladas en Turno',desc:'Cambiar control a R0.045 · Bajar separador -2/-3 pts · Mantener ventilación constante · Muestreo cada 20-30 min · Registro condición A/B',cls:'active'},
+    {time:'Fase 1 — 24 a 72 horas',title:'Optimización Fina y Confirmación Estadística',desc:'Construir curva rotor-R045-t/h-kWh/t (≥4 puntos) · Reducir FK CP400 a 72% · FK CESP 49→47% · Barrido dosis aditivo · Medir O₂ y sellar falsos aires',cls:''},
+    {time:'Fase 2 — 7 días',title:'Estandarización y Auditoría',desc:'Estandarizar SOP por tipo de cemento · Auditoría carga de bolas · Plan de topping · Mantenimiento estanqueidad · Capacitación de turnos',cls:''},
+    {time:'Fase 3 — 30 días',title:'Consolidación de Metas 2026',desc:'Validar cumplimiento sostenido de metas · CP400: 95 t/h, 42 kWh/t, FK 72% · CESP: 98 t/h, 41 kWh/t, FK 47% · Probar CP400 FK 70% si 28d cumple',cls:''},
+    {time:'Fase 4 — Trimestral',title:'Revisión y Mejora Continua',desc:'Revisión trimestral de KPIs · Ajuste de recetas según variabilidad de materias primas · Control estadístico de proceso · Reporte a Gerencia',cls:''}
+  ];
+  document.getElementById('timeline').innerHTML=items.map(it=>`
+    <div class="tl-item ${it.cls}">
+      <div class="tl-time">${it.time}</div>
+      <div class="tl-title">${it.title}</div>
+      <div class="tl-desc">${it.desc}</div>
+    </div>`).join('');
+}
+
+// =================== TAB 6: TABLA ===================
+function renderTable(){
+  const sel=document.getElementById('filterTable').value;
+  const data=sel==='ALL'?MONTHLY:MONTHLY.filter(m=>m.t===sel);
+  const months=[...new Set(data.map(m=>m.m))].sort();
+  let html=`<table class="data-table"><thead><tr><th>Mes</th><th>Producto</th><th>Producción (ton)</th><th>Horas</th><th>Rend. (t/h)</th><th>kWh/t</th><th>FK (%)</th><th>Registros</th></tr></thead><tbody>`;
+  data.sort((a,b)=>a.m.localeCompare(b.m)||a.t.localeCompare(b.t)).forEach(m=>{
+    const rCls=m.t==='CP400'?(m.r>=95?'ok':m.r>=90?'warn-val':'oor'):(m.r>=98?'ok':m.r>=93?'warn-val':'oor');
+    const kCls=m.t==='CP400'?(m.k<=42?'ok':m.k<=45?'warn-val':'oor'):(m.k<=41?'ok':m.k<=44?'warn-val':'oor');
+    const fCls=m.t==='CP400'?(m.f<=72?'ok':m.f<=74?'warn-val':'oor'):(m.f<=47?'ok':m.f<=50?'warn-val':'oor');
+    html+=`<tr><td>${m.m}</td><td>${m.t}</td><td>${m.p.toLocaleString('es-CL')}</td><td>${m.h.toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1})}</td><td class="${rCls}">${m.r}</td><td class="${kCls}">${m.k}</td><td class="${fCls}">${m.f}</td><td>${m.n}</td></tr>`;
+  });
+  html+='</tbody></table>';
+  document.getElementById('tableWrap').innerHTML=html;
+}
+
+// =================== RENDER ALL ===================
+function renderAll(){
+  renderResumen();
+  renderProdTab();
+  renderAlternativas();
+  renderRiesgos();
+  renderPlan();
+  renderTable();
+  const el=document.getElementById('lastUpdateInfo');
+  if(el) el.textContent='Última actualización: '+getLastUpdate()+' · '+MONTHLY.length+' registros en memoria';
+}
+renderAll();
+
+// =================== AGREGAR / RESETEAR DATOS ===================
+function addRecord(){
+  const m=document.getElementById('inp_m').value.trim();
+  const t=document.getElementById('inp_t').value;
+  const p=parseFloat(document.getElementById('inp_p').value);
+  const h=parseFloat(document.getElementById('inp_h').value);
+  const r=parseFloat(document.getElementById('inp_r').value);
+  const k=parseFloat(document.getElementById('inp_k').value);
+  const f=parseFloat(document.getElementById('inp_f').value);
+  const n=parseInt(document.getElementById('inp_n').value);
+  const msg=document.getElementById('addMsg');
+
+  if(!m||!/^\d{4}-\d{2}$/.test(m)){msg.innerHTML='<span style="color:var(--accent-rose)">Formato de mes inválido. Usa YYYY-MM (ej: 2026-01)</span>';return;}
+  if(isNaN(p)||isNaN(h)||isNaN(r)||isNaN(k)||isNaN(f)||isNaN(n)){msg.innerHTML='<span style="color:var(--accent-rose)">Completa todos los campos numéricos</span>';return;}
+
+  // Si ya existe ese mes+tipo, reemplazar
+  const idx=MONTHLY.findIndex(x=>x.m===m&&x.t===t);
+  const rec={m,t,p,h,r,k,f,n};
+  if(idx>=0){
+    MONTHLY[idx]=rec;
+    msg.innerHTML=`<span style="color:var(--accent-amber)">Registro ${m} ${t} actualizado (reemplazado)</span>`;
+  } else {
+    MONTHLY.push(rec);
+    msg.innerHTML=`<span style="color:var(--accent-emerald)">✓ Registro ${m} ${t} agregado correctamente</span>`;
+  }
+
+  saveData(MONTHLY);
+  setLastUpdate();
+  renderAll();
+
+  // Limpiar inputs
+  ['inp_m','inp_p','inp_h','inp_r','inp_k','inp_f','inp_n'].forEach(id=>document.getElementById(id).value='');
+}
+
+function resetData(){
+  if(!confirm('¿Restaurar todos los datos a los valores iniciales? Se perderán los datos agregados manualmente.')){return;}
+  MONTHLY=JSON.parse(JSON.stringify(INITIAL_DATA));
+  saveData(MONTHLY);
+  setLastUpdate();
+  renderAll();
+  const msg=document.getElementById('addMsg');
+  if(msg) msg.innerHTML='<span style="color:var(--accent-amber)">Datos restaurados a valores iniciales</span>';
+}
+</script>
+</body>
+</html>
