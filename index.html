@@ -344,22 +344,29 @@ header{background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-bottom:
 
 <script>
 // =================== DATA + PERSISTENCIA ===================
-const INITIAL_DATA = [{"m":"2025-01","t":"CESP","p":13856,"h":144.3,"r":95.6,"k":42.2,"f":49.9,"n":19},{"m":"2025-01","t":"CP400","p":24256,"h":260.6,"r":92.8,"k":43.9,"f":75.3,"n":24},{"m":"2025-02","t":"CESP","p":7881,"h":81.0,"r":96.3,"k":41.7,"f":50.6,"n":7},{"m":"2025-02","t":"CP400","p":15600,"h":174.0,"r":90.1,"k":45.6,"f":74.0,"n":16},{"m":"2025-03","t":"CESP","p":11165,"h":120.6,"r":91.7,"k":44.2,"f":50.2,"n":12},{"m":"2025-03","t":"CP400","p":25555,"h":265.9,"r":96.6,"k":42.5,"f":73.4,"n":24},{"m":"2025-04","t":"CESP","p":9790,"h":107.3,"r":90.3,"k":45.3,"f":49.2,"n":10},{"m":"2025-04","t":"CP400","p":24244,"h":265.7,"r":91.4,"k":45.0,"f":73.2,"n":22},{"m":"2025-05","t":"CESP","p":9459,"h":99.4,"r":95.4,"k":42.2,"f":48.7,"n":10},{"m":"2025-05","t":"CP400","p":25450,"h":286.4,"r":88.4,"k":47.1,"f":74.0,"n":24},{"m":"2025-06","t":"CESP","p":8075,"h":84.2,"r":95.3,"k":42.9,"f":53.1,"n":9},{"m":"2025-06","t":"CP400","p":22259,"h":246.0,"r":90.8,"k":45.9,"f":75.2,"n":20},{"m":"2025-07","t":"CESP","p":5418,"h":57.2,"r":89.6,"k":50.1,"f":53.1,"n":8},{"m":"2025-07","t":"CP400","p":20451,"h":218.1,"r":93.3,"k":45.8,"f":73.6,"n":20},{"m":"2025-08","t":"CESP","p":14358,"h":142.6,"r":95.9,"k":53.7,"f":51.7,"n":16},{"m":"2025-08","t":"CP400","p":32047,"h":360.5,"r":88.8,"k":47.9,"f":74.7,"n":28},{"m":"2025-09","t":"CESP","p":9970,"h":100.5,"r":98.2,"k":43.3,"f":50.7,"n":11},{"m":"2025-09","t":"CP400","p":21913,"h":257.4,"r":83.8,"k":48.3,"f":75.5,"n":21},{"m":"2025-10","t":"CESP","p":19522,"h":203.1,"r":94.5,"k":42.1,"f":53.0,"n":21},{"m":"2025-10","t":"CP400","p":23242,"h":287.2,"r":77.4,"k":45.6,"f":72.6,"n":25},{"m":"2025-11","t":"CESP","p":5215,"h":51.1,"r":101.4,"k":41.9,"f":51.7,"n":7},{"m":"2025-11","t":"CP400","p":9756,"h":115.8,"r":84.1,"k":53.2,"f":74.5,"n":10}];
+const INITIAL_DATA = [{"m":"2025-01","t":"CESP","p":13856,"h":144.3,"r":95.6,"k":42.2,"f":49.9,"n":19},{"m":"2025-01","t":"CP400","p":24256,"h":260.6,"r":92.8,"k":43.9,"f":75.3,"n":24},{"m":"2025-02","t":"CESP","p":7881,"h":81.0,"r":96.3,"k":41.7,"f":50.6,"n":7},{"m":"2025-02","t":"CP400","p":15600,"h":174.0,"r":90.1,"k":45.6,"f":74.0,"n":16},{"m":"2025-03","t":"CESP","p":11165,"h":120.6,"r":91.7,"k":44.2,"f":50.2,"n":12},{"m":"2025-03","t":"CP400","p":25555,"h":265.9,"r":96.6,"k":42.5,"f":73.4,"n":24},{"m":"2025-04","t":"CESP","p":9790,"h":107.3,"r":90.3,"k":45.3,"f":49.2,"n":10},{"m":"2025-04","t":"CP400","p":24244,"h":265.7,"r":91.4,"k":45.0,"f":73.2,"n":22},{"m":"2025-05","t":"CESP","p":9459,"h":99.4,"r":95.4,"k":42.2,"f":48.7,"n":10},{"m":"2025-05","t":"CP400","p":25450,"h":286.4,"r":88.4,"k":47.1,"f":74.0,"n":24},{"m":"2025-06","t":"CESP","p":8075,"h":84.2,"r":95.3,"k":42.9,"f":53.1,"n":9},{"m":"2025-06","t":"CP400","p":22259,"h":246.0,"r":90.8,"k":45.9,"f":75.2,"n":20},{"m":"2025-07","t":"CESP","p":5418,"h":57.2,"r":89.6,"k":50.1,"f":53.1,"n":8},{"m":"2025-07","t":"CP400","p":20451,"h":218.1,"r":93.3,"k":45.8,"f":73.6,"n":20},{"m":"2025-08","t":"CESP","p":14358,"h":142.6,"r":95.9,"k":53.7,"f":51.7,"n":16},{"m":"2025-08","t":"CP400","p":32047,"h":360.5,"r":88.8,"k":47.9,"f":74.7,"n":28},{"m":"2025-09","t":"CESP","p":9970,"h":100.5,"r":98.2,"k":43.3,"f":50.7,"n":11},{"m":"2025-09","t":"CP400","p":21913,"h":257.4,"r":83.8,"k":48.3,"f":75.5,"n":21},{"m":"2025-10","t":"CESP","p":19522,"h":203.1,"r":94.5,"k":42.1,"f":53.0,"n":21},{"m":"2025-10","t":"CP400","p":23242,"h":287.2,"r":77.4,"k":45.6,"f":72.6,"n":25},{"m":"2025-11","t":"CESP","p":5215,"h":51.1,"r":101.4,"k":41.9,"f":51.7,"n":7},{"m":"2025-11","t":"CP400","p":9756,"h":115.8,"r":84.1,"k":53.2,"f":74.5,"n":10},{"m":"2026-01","t":"CESP","p":12117,"h":126.2,"r":95.9,"k":40.3,"f":48.7,"n":13},{"m":"2026-01","t":"CP400","p":18459,"h":210.6,"r":87.1,"k":45.5,"f":73.8,"n":18},{"m":"2026-02","t":"CESP","p":15962,"h":160.9,"r":98.8,"k":38.8,"f":46.7,"n":13},{"m":"2026-02","t":"CP400","p":20642,"h":228.0,"r":90.8,"k":42.5,"f":72.5,"n":20},{"m":"2026-03","t":"CESP","p":6922,"h":69.6,"r":98.1,"k":38.3,"f":47.9,"n":8},{"m":"2026-03","t":"CP400","p":14354,"h":167.6,"r":86.3,"k":44.1,"f":71.2,"n":15}];
 
-// ── Persistencia: carga datos guardados o usa los iniciales ──
+// ── Persistencia: versiona los datos para detectar actualizaciones ──
 const STORAGE_KEY = 'polpaico_molienda_2026';
+const DATA_VERSION = '2026-03-24'; // cambiar con cada actualización
 function loadData(){
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if(saved){ return JSON.parse(saved); }
+    const savedVer = localStorage.getItem(STORAGE_KEY+'_ver');
+    if(savedVer === DATA_VERSION){
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if(saved){ return JSON.parse(saved); }
+    }
   } catch(e){ console.warn('localStorage no disponible, usando datos iniciales'); }
   return INITIAL_DATA;
 }
 function saveData(data){
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+  try { 
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); 
+    localStorage.setItem(STORAGE_KEY+'_ver', DATA_VERSION);
+  } catch(e){}
 }
 let MONTHLY = loadData();
-saveData(MONTHLY); // asegura que siempre quede guardado
+saveData(MONTHLY);
 
 // Indicador de última actualización
 function getLastUpdate(){
@@ -445,7 +452,7 @@ function renderResumen(){
   const ceFk=avg(ce.map(m=>m.f));
 
   document.getElementById('kpiMain').innerHTML=`
-    <div class="kpi blue"><div class="kpi-label">Producción Total 2025</div><div class="kpi-value">${fmtK(totalProd)}<span class="kpi-unit">ton</span></div><div class="kpi-sub">CP400: ${fmtK(cp.reduce((s,m)=>s+m.p,0))} · CESP: ${fmtK(ce.reduce((s,m)=>s+m.p,0))}</div></div>
+    <div class="kpi blue"><div class="kpi-label">Producción Total</div><div class="kpi-value">${fmtK(totalProd)}<span class="kpi-unit">ton</span></div><div class="kpi-sub">CP400: ${fmtK(cp.reduce((s,m)=>s+m.p,0))} · CESP: ${fmtK(ce.reduce((s,m)=>s+m.p,0))}</div></div>
     <div class="kpi cyan"><div class="kpi-label">Rendimiento CP400</div><div class="kpi-value">${fmtNum(cpRend)}<span class="kpi-unit">t/h</span></div><div class="kpi-gap">${gapText(cpRend,TARGETS.CP400.rend,'t/h',false)}</div><div class="kpi-sub">Meta 2026: ${TARGETS.CP400.rend} t/h</div></div>
     <div class="kpi emerald"><div class="kpi-label">Rendimiento CESP</div><div class="kpi-value">${fmtNum(ceRend)}<span class="kpi-unit">t/h</span></div><div class="kpi-gap">${gapText(ceRend,TARGETS.CESP.rend,'t/h',false)}</div><div class="kpi-sub">Meta 2026: ${TARGETS.CESP.rend} t/h</div></div>
     <div class="kpi amber"><div class="kpi-label">kWh/t CP400</div><div class="kpi-value">${fmtNum(cpKwh)}<span class="kpi-unit">kWh/t</span></div><div class="kpi-gap">${gapText(cpKwh,TARGETS.CP400.kwh,'kWh/t',true)}</div><div class="kpi-sub">Meta 2026: ≤${TARGETS.CP400.kwh}</div></div>
